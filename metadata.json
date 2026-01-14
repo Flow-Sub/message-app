@@ -1,0 +1,9 @@
+
+{
+  "name": "iMessage Style AI Chat",
+  "description": "A high-quality, responsive chat interface inspired by iOS iMessage with dark mode support, file uploads, and integration with a production n8n API.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
