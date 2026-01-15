@@ -53,39 +53,52 @@ const App: React.FC = () => {
   };
 
   const handleSendMessage = async (text: string, attachments: Attachment[]) => {
-    const userMessageId = `msg_${Date.now()}`;
-    const userMessage: Message = {
+  const userMessageId = `msg_${Date.now()}`;
+  
+  // 1. Create the UI message
+  const userMessage: Message = {
+    id: userMessageId,
+    text,
+    role: 'user',
+    timestamp: new Date().toISOString(),
+    attachments, // These contain the Base64 URLs created in ChatInput
+  };
+
+  setMessages(prev => [...prev, userMessage]);
+  setIsTyping(true);
+
+  const currentUser: User = { id: 'user_001', name: 'John Doe' };
+
+  // 2. Prepare Payload for n8n
+  // We map over attachments to ensure we send clean data
+  const payload = {
+    sessionId,
+    user: currentUser,
+    message: {
       id: userMessageId,
       text,
-      role: 'user',
-      timestamp: new Date().toISOString(),
-      attachments,
-    };
+      timestamp: userMessage.timestamp,
+    },
+    // ADD THIS SECTION
+    attachments: attachments.map(att => ({
+      name: att.name,
+      mimeType: att.mimeType,
+      // The 'url' here is your Base64 string (e.g. "data:image/png;base64,iVBORw0...")
+      content: att.url 
+    }))
+  };
 
-    setMessages(prev => [...prev, userMessage]);
-    setIsTyping(true);
+  try {
+    const controller = new AbortController();
+    // Increase timeout for images as they take longer to upload
+    const timeoutId = setTimeout(() => controller.abort(), 60000); 
 
-    const currentUser: User = { id: 'user_001', name: 'John Doe' };
-    const payload: ApiRequestPayload = {
-      sessionId,
-      user: currentUser,
-      message: {
-        id: userMessageId,
-        text,
-        timestamp: userMessage.timestamp,
-      }
-    };
-
-    try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 35000); // 35s safety
-
-      const response = await fetch(WEBHOOK_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-        signal: controller.signal,
-      });
+    const response = await fetch(WEBHOOK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload), // Send the payload with attachments
+      signal: controller.signal,
+    });
 
       clearTimeout(timeoutId);
 
