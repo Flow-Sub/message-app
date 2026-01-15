@@ -32,10 +32,12 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, disabled }) => {
         const reader = new FileReader();
         reader.onload = (event) => {
           const newAttachment: Attachment = {
-            id: Math.random().toString(36).substr(2, 9),
+            id: crypto.randomUUID(),
             type: file.type.startsWith('image/') ? 'image' : 'file',
             url: event.target?.result as string,
-            name: file.name
+            name: file.name,
+            mimeType: file.type,
+            size: file.size,
           };
           setAttachments(prev => [...prev, newAttachment]);
         };
@@ -92,12 +94,22 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, disabled }) => {
           >
             <Paperclip size={24} />
           </button>
-          <input 
-            type="file" 
-            ref={fileInputRef} 
-            onChange={handleFileChange} 
-            multiple 
-            className="hidden" 
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileChange}
+            multiple
+            accept="
+              image/*,
+              .pdf,
+              .csv,
+              .xlsx,
+              .xls,
+              .doc,
+              .docx,
+              .txt
+            "
+            className="hidden"
           />
         </div>
 

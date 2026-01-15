@@ -27,11 +27,19 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, onImageClick }) => {
                   className="w-32 h-32 object-cover rounded-2xl cursor-pointer border border-gray-200 dark:border-gray-800 shadow-sm transition-transform hover:scale-105"
                 />
               ) : (
-                <div className="flex items-center gap-2 p-3 bg-gray-100 dark:bg-zinc-900 rounded-xl border border-gray-200 dark:border-zinc-800 text-sm">
-                  <FileText size={18} className="text-blue-500" />
-                  <span className="truncate max-w-[120px] dark:text-gray-300">{att.name}</span>
-                </div>
-              )}
+                  <a
+                    href={att.url}
+                    download={att.name}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 p-3 bg-gray-100 dark:bg-zinc-900 rounded-xl border border-gray-200 dark:border-zinc-800 text-sm hover:bg-gray-200 dark:hover:bg-zinc-800 transition"
+                  >
+                    <FileText size={18} className="text-blue-500" />
+                    <span className="truncate max-w-[120px] dark:text-gray-300">
+                      {att.name}
+                    </span>
+                  </a>
+                )}
             </div>
           ))}
         </div>

@@ -23,6 +23,8 @@ export interface Attachment {
   type: 'image' | 'file';
   url: string;
   name: string;
+  mimeType?: string;
+  size?: number;
 }
 
 export interface Source {
